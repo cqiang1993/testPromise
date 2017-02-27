@@ -1,8 +1,13 @@
-var host = "fepapi.debug.web.nd";
+var MacTokenUtil = require('./MacTokenUtil');
+var host = "fepapi.beta.web.sdp.101.com";
 var user_id = "";
 var sessions_id = "";
-function setUserId(uid){
-    user_id = uid
+var macToken = "";
+var macKey = "";
+function setUser(uid,token,key){
+    user_id = uid;
+    macToken = token;
+    macKey = key;
 }
 
 function setSession(session){
@@ -35,9 +40,7 @@ function getMyExam(){
         uri: 'http://'+host+'/v1.1/qom/exams/actions/my_exams',
         method:'GET',
         headers:{
-            // "Authorization":MacTokenUtil.getMacContent(host,"GET","/v1.1/qom/exams/actions/my_exams",
-            //     "639EF1FB9EBEAB044D332497B33C2E30ECC2BDE74CF42954285DD2F8DFA27E0CAB153203C3536098","IaWOZ/O8wiGqIJ6Zh4d0Yw==")
-            "Authorization":"Debug UserId="+user_id
+            "Authorization":MacTokenUtil.getMacContent(host,"GET","/v1.1/qom/exams/actions/my_exams",macToken,macKey)
         },
         json:true
     }
@@ -47,9 +50,7 @@ function startExam(req){
     return {
         uri:'http://'+host+"/v1/qom/exams/"+req.params.exam_id+"/sessions",
         headers:{
-            // "Authorization":MacTokenUtil.getMacContent(host,"GET","/v1.1/qom/exams/actions/my_exams",
-            //     "639EF1FB9EBEAB044D332497B33C2E30ECC2BDE74CF42954285DD2F8DFA27E0CAB153203C3536098","IaWOZ/O8wiGqIJ6Zh4d0Yw==")
-            "Authorization":"Debug UserId="+user_id
+            "Authorization":MacTokenUtil.getMacContent(host,"POST","/v1/qom/exams/"+req.params.exam_id+"/sessions",macToken,macKey)
         },
         method:"POST",
         json:true
@@ -60,9 +61,7 @@ function putAnswer(req,answers){
     return {
         uri:'http://'+host+"/v1/qom/exams/"+req.params.exam_id+"/sessions/"+sessions_id+"/answers",
         headers:{
-            // "Authorization":MacTokenUtil.getMacContent(host,"GET","/v1.1/qom/exams/actions/my_exams",
-            //     "639EF1FB9EBEAB044D332497B33C2E30ECC2BDE74CF42954285DD2F8DFA27E0CAB153203C3536098","IaWOZ/O8wiGqIJ6Zh4d0Yw==")
-            "Authorization":"Debug UserId="+user_id
+            "Authorization":MacTokenUtil.getMacContent(host,"PUT","/v1/qom/exams/"+req.params.exam_id+"/sessions/"+sessions_id+"/answers",macToken,macKey)
         },
         method:"PUT",
         body:answers,
@@ -87,9 +86,18 @@ function getReport(req){
     return {
         uri:'http://'+host+"/v1/qom/reports/exams/"+req.params.exam_id,
         headers:{
-            // "Authorization":MacTokenUtil.getMacContent(host,"GET","/v1.1/qom/exams/actions/my_exams",
-            //     "639EF1FB9EBEAB044D332497B33C2E30ECC2BDE74CF42954285DD2F8DFA27E0CAB153203C3536098","IaWOZ/O8wiGqIJ6Zh4d0Yw==")
-            "Authorization":"Debug UserId="+user_id
+            "Authorization":MacTokenUtil.getMacContent(host,"GET","/v1/qom/reports/exams/"+req.params.exam_id,macToken,macKey)
+        },
+        method:"GET",
+        json:true
+    }
+}
+
+function getPaper(req){
+    return {
+        uri:"http://"+host+"/v1/qom/papers/"+req.params.paper_id,
+        headers:{
+            "Authorization":MacTokenUtil.getMacContent(host,"GET","/v1/qom/papers/"+req.params.paper_id,macToken,macKey)
         },
         method:"GET",
         json:true
@@ -99,9 +107,10 @@ function getReport(req){
 exports.getMyExam = getMyExam;
 exports.getCodes = getCodes;
 exports.login = login;
-exports.setUserId = setUserId;
+exports.setUser = setUser;
 exports.startExam = startExam;
 exports.setSession = setSession;
 exports.putAnswer = putAnswer;
 exports.submit = submit;
 exports.getReport = getReport;
+exports.getPaper = getPaper;
