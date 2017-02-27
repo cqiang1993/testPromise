@@ -54,10 +54,11 @@ function getMyExam(req){
 }
 
 function startExam(req){
+    var url = "/v1/qom/exams/"+req.params.exam_id+"/sessions";
     return {
-        uri:'http://'+host+"/v1/qom/exams/"+req.params.exam_id+"/sessions",
+        uri:'http://'+host+url,
         headers:{
-            "Authorization":MacTokenUtil.getMacContent(host,"POST","/v1/qom/exams/"+req.params.exam_id+"/sessions",macToken,macKey)
+            "Authorization":MacTokenUtil.getMacContent(host,"POST",url,macToken,macKey)
         },
         method:"POST",
         json:true
@@ -65,10 +66,11 @@ function startExam(req){
 }
 
 function putAnswer(req,answers){
+    var url = "/v1/qom/exams/"+req.params.exam_id+"/sessions/"+sessions_id+"/answers";
     return {
-        uri:'http://'+host+"/v1/qom/exams/"+req.params.exam_id+"/sessions/"+sessions_id+"/answers",
+        uri:'http://'+host+url,
         headers:{
-            "Authorization":MacTokenUtil.getMacContent(host,"PUT","/v1/qom/exams/"+req.params.exam_id+"/sessions/"+sessions_id+"/answers",macToken,macKey)
+            "Authorization":MacTokenUtil.getMacContent(host,"PUT",url,macToken,macKey)
         },
         method:"PUT",
         body:answers,
@@ -77,12 +79,14 @@ function putAnswer(req,answers){
 }
 
 function submit(req){
+    var url = "/v1/qom/exams/"+req.params.exam_id+"/sessions/"+sessions_id+"/submit";
     return {
-        uri:'http://'+host+"/v1/qom/exams/"+req.params.exam_id+"/sessions/"+sessions_id+"/submit",
+        uri:'http://'+host+url,
         headers:{
-            // "Authorization":MacTokenUtil.getMacContent(host,"GET","/v1.1/qom/exams/actions/my_exams",
-            //     "639EF1FB9EBEAB044D332497B33C2E30ECC2BDE74CF42954285DD2F8DFA27E0CAB153203C3536098","IaWOZ/O8wiGqIJ6Zh4d0Yw==")
-            "Authorization":"Debug UserId="+user_id
+            // // "Authorization":MacTokenUtil.getMacContent(host,"GET","/v1.1/qom/exams/actions/my_exams",
+            // //     "639EF1FB9EBEAB044D332497B33C2E30ECC2BDE74CF42954285DD2F8DFA27E0CAB153203C3536098","IaWOZ/O8wiGqIJ6Zh4d0Yw==")
+            // "Authorization":"Debug UserId="+user_id
+            "Authorization":MacTokenUtil.getMacContent(host,"POST",url,macToken,macKey)
         },
         method:"POST",
         json:true
@@ -90,10 +94,11 @@ function submit(req){
 }
 
 function getReport(req){
+    var url = "/v1/qom/reports/exams/"+req.params.exam_id;
     return {
-        uri:'http://'+host+"/v1/qom/reports/exams/"+req.params.exam_id,
+        uri:'http://'+host+url,
         headers:{
-            "Authorization":MacTokenUtil.getMacContent(host,"GET","/v1/qom/reports/exams/"+req.params.exam_id,macToken,macKey)
+            "Authorization":MacTokenUtil.getMacContent(host,"GET",url,macToken,macKey)
         },
         method:"GET",
         json:true
@@ -101,10 +106,11 @@ function getReport(req){
 }
 
 function getPaper(req){
+    var url = "/v1/qom/papers/"+req.body.paper_id;
     return {
-        uri:"http://"+host+"/v1/qom/papers/"+req.body.paper_id,
+        uri:"http://"+host+url,
         headers:{
-            "Authorization":MacTokenUtil.getMacContent(host,"GET","/v1/qom/papers/"+req.body.paper_id,macToken,macKey)
+            "Authorization":MacTokenUtil.getMacContent(host,"GET",url,macToken,macKey)
         },
         method:"GET",
         json:true

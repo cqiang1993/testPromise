@@ -24,6 +24,38 @@ router.post("/tokens",function (req,res) {
     })
 });
 
+function findAnswer(paper_id,question_id,option){
+    models.Qom.find({PaperId:paper_id},function(err,data){
+        if(err){
+            console.log(err);
+        }else {
+            var QuestionList = data["QuestionList"];
+            for (var i=0;i<QuestionList.length;i++){
+                if(QuestionList[i]["questionId"] == question_id){
+                    var question = QuestionList[i];
+                    return question["options"][option]
+                }
+            }
+        }
+    })
+}
+
+function findExpect(paper_id,code,option){
+    models.Qom.find({PaperId:paper_id},function(err,data){
+        if(err){
+            console.log(err)
+        }else {
+            var TagCodes = data["TagCodes"];
+            for (var i=0;i<TagCodes.length;i++){
+                if(TagCodes[i]["code"] == code){
+                    var tagCode = TagCodes[i];
+                    return tagCode[option]
+                }
+            }
+        }
+    })
+}
+
 router.get('/commonapi/get_codes',function (req,res) {
     console.log('读取');
     var options = middleFunc.getCodes();
@@ -48,12 +80,14 @@ router.get('/qom/exams/actions/my_exams',function (req,res) {
 
 router.post("/qom/:exam_id/sessions",function (req,res) {
     var options = middleFunc.startExam(req);
+    var option = req.query.option;
     rp(options).then(function (repos) {
         middleFunc.setSession(repos["session_id"]);
+        var paper_id = repos["id"];
         var questions = repos["paper"]["parts"][0]["questions"];
         var answers = [];
         questions.forEach(function (item,index) {
-            answers.push({question_id:item["id"],answer:{answer: "A", time_consuming: 500}})
+            answers.push({question_id:item["id"],answer:{answer: findAnswer(paper_id,item["id"],option), time_consuming: 500}})
         });
         var options2 = middleFunc.putAnswer(req,answers);
         rp(options2).then(function (repos) {
@@ -74,6 +108,8 @@ router.post("/qom/:exam_id/sessions",function (req,res) {
 
 router.get("/assertRepot/:exam_id",function (req,res) {
     var options = middleFunc.getReport(req);
+    var option = req.query.option;
+    var paper_id = req.query.paper_id;
     var report = [];
     rp(options)
         .then(function (repos) {
@@ -83,7 +119,7 @@ router.get("/assertRepot/:exam_id",function (req,res) {
                     {
                         dimension_code: item["dimension_code"],
                         dimension_name: item["dimension_name"],
-                        expected_value: "5".toFixed(3),
+                        expected_value: findExpect(paper_id,item["dimension_code"],option),
                         actual_value: item["score"].toFixed(3)
                     })
             });
