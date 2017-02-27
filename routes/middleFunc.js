@@ -1,5 +1,6 @@
 var MacTokenUtil = require('./MacTokenUtil');
-var host = "fepapi.beta.web.sdp.101.com";
+var querystring = require('querystring');
+var host = "fepapi.debug.web.nd";
 var user_id = "";
 var sessions_id = "";
 var macToken = "";
@@ -35,12 +36,18 @@ function getCodes(){
     }
 }
 
-function getMyExam(){
+function getMyExam(req){
+    var url = '/v1.1/qom/exams/actions/my_exams';
+    var qustring = "?"+querystring.stringify(req.query);
+    if(req.query){
+        url = url + qustring
+    }
+    console.log(url);
     return {
-        uri: 'http://'+host+'/v1.1/qom/exams/actions/my_exams',
+        uri: 'http://'+host+url,
         method:'GET',
         headers:{
-            "Authorization":MacTokenUtil.getMacContent(host,"GET","/v1.1/qom/exams/actions/my_exams",macToken,macKey)
+            "Authorization":MacTokenUtil.getMacContent(host,"GET",url,macToken,macKey)
         },
         json:true
     }
@@ -95,9 +102,9 @@ function getReport(req){
 
 function getPaper(req){
     return {
-        uri:"http://"+host+"/v1/qom/papers/"+req.params.paper_id,
+        uri:"http://"+host+"/v1/qom/papers/"+req.body.paper_id,
         headers:{
-            "Authorization":MacTokenUtil.getMacContent(host,"GET","/v1/qom/papers/"+req.params.paper_id,macToken,macKey)
+            "Authorization":MacTokenUtil.getMacContent(host,"GET","/v1/qom/papers/"+req.body.paper_id,macToken,macKey)
         },
         method:"GET",
         json:true
